@@ -243,6 +243,8 @@ class TrajectoryUtils():
 
         # [STUDENTS TODO] Rework the method to per-axis computation if you want to exploit the allowed dynamics in all axes
         # Set minimal velocity/acceleration to the axis limit with minimal constraint
+        # print("max_vel: ", self.max_acceleration)
+        # print("max_acc: ", self.max_acceleration)
         min_ax_vel = min(self.max_velocity)
         min_ax_acc = min(self.max_acceleration)
 
@@ -608,7 +610,7 @@ class TrajectoryUtils():
         ## |  [COLLISION AVOIDANCE METHOD #2]: Delay UAV with shorter trajectory at start until there is no collision occurring  |
         elif method == 'delay_till_no_collisions_occur':
 
-            raise NotImplementedError('[STUDENTS TODO] Collision prevention method \'delay_till_no_collisions_occur\' not finished. You have to finish it on your own.')
+            # raise NotImplementedError('[STUDENTS TODO] Collision prevention method \'delay_till_no_collisions_occur\' not finished. You have to finish it on your own.')
             # Tips:
             #  - you might select which trajectory it is better to delay
             #  - the smallest delay step is the sampling step stored in variable 'self.dT'
@@ -616,6 +618,11 @@ class TrajectoryUtils():
             delay_step = self.dT
             traj_times = [t.getTime() for t in trajectories]
             traj_lens  = [t.getLength() for t in trajectories]
+
+            print(trajectories[0])
+            # print("Traj: ", trajectories[0].print())
+            print("Times: ", traj_times)
+            print("Length: ", traj_lens)
 
             # Decide which UAV should be delayed
             # [STUDENTS TODO] CHANGE BELOW
@@ -625,17 +632,29 @@ class TrajectoryUtils():
             collision_flag, collision_idx = \
                 self.trajectoriesCollide(trajectories[delay_robot_idx], trajectories[nondelay_robot_idx], safety_distance)
 
-            i = 0
+            # print("Collision IDX: ", collision_idx)
+            delay_t = delay_step
+
             while collision_flag:
+                # print(collision_idx)
+                # trajectories[delay_robot_idx].delaySegment(collision_idx, delay_t)
+                # collision_flag, collision_idx = \
+                #     self.trajectoriesCollide(trajectories[delay_robot_idx], trajectories[nondelay_robot_idx],
+                #                              safety_distance)
+                # if collision_flag and current_collision == collision_idx:
+                #     delay_t += delay_step
+                #     print(delay_t)
+                # else:
+                #     delay_t = delay_step
 
                 # delay the shorter-trajectory UAV at the start point by sampling period
+                delay_t += delay_step
+                # TIP: use function `trajectory.delayStart(X)` to delay a UAV at the start location by X seconds
+                trajectories[delay_robot_idx].delayStart(delay_step)
+                collision_flag, collision_idx = \
+                    self.trajectoriesCollide(trajectories[delay_robot_idx], trajectories[nondelay_robot_idx],
+                                             safety_distance)
 
-                if i < 10:
-                    delay_t += delay_step
-                    # TIP: use function `trajectory.delayStart(X)` to delay a UAV at the start location by X seconds
-                    trajectories[delay_robot_idx].delayStart(delay_step)
-                else:
-                    collision_flag = False
 
         # # #}
 
