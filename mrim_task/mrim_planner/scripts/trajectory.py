@@ -449,15 +449,15 @@ class TrajectoryUtils():
             toppra_trajectory = self.getParametrizedTrajectory(traj_hdg_interp, velocity_limits, acceleration_limits)
 
             sampling_step = trajectory.dT
+            ts_sample = np.arange(0, toppra_trajectory.duration, sampling_step)
 
             # STUDENTS TODO: Sample the path parametrization 'toppra_trajectory' (instance of TOPPRA library).
-            raise NotImplementedError('[STUDENTS TODO] Trajectory sampling not finished. You have to implement it on your own.')
+            # raise NotImplementedError('[STUDENTS TODO] Trajectory sampling not finished. You have to implement it on your own.')
             # Tips:
             #  - check documentation for TOPPRA (look for eval() function): https://hungpham2511.github.io/toppra/index.html
             #  - use 'toppra_trajectory' and the predefined sampling step 'sampling_step'
 
-            samples = [] # [STUDENTS TODO] Fill this variable with trajectory samples
-
+            samples = toppra_trajectory.eval(ts_sample)  # [STUDENTS TODO] Fill this variable with trajectory samples
             # Convert to Trajectory class
             poses      = [Pose(q[0], q[1], q[2], q[3]) for q in samples]
             trajectory = self.posesToTrajectory(poses)
@@ -568,7 +568,7 @@ class TrajectoryUtils():
         path       = ta.SplineInterpolator(np.linspace(0, 1, len(waypoints)), wp_lists)
         pc_vel     = constraint.JointVelocityConstraint(v_lims)
         pc_acc     = constraint.JointAccelerationConstraint(a_lims)
-        instance   = algo.TOPPRA([pc_vel, pc_acc], path, parametrizer="ParametrizeConstAccel")
+        instance   = algo.TOPPRA([pc_vel, pc_acc], path, parametrizer="ParametrizeConstAccel", gridpoints=np.linspace(0, path.duration, 6*len(waypoints)))
         trajectory = instance.compute_trajectory()
 
         return trajectory
@@ -628,32 +628,39 @@ class TrajectoryUtils():
             # [STUDENTS TODO] CHANGE BELOW
             delay_robot_idx, nondelay_robot_idx = 0, 1
 
+            if traj_times[delay_robot_idx] > traj_times[nondelay_robot_idx]:
+                delay_robot_idx, nondelay_robot_idx = 1, 0
+
             # TIP: use function `self.trajectoriesCollide()` to check if two trajectories are in collision
             collision_flag, collision_idx = \
                 self.trajectoriesCollide(trajectories[delay_robot_idx], trajectories[nondelay_robot_idx], safety_distance)
 
             # print("Collision IDX: ", collision_idx)
             delay_t = delay_step
+            # current_collision = collision_idx
+            # trajecory_backup = trajectories[delay_robot_idx]
 
             while collision_flag:
                 # print(collision_idx)
-                # trajectories[delay_robot_idx].delaySegment(collision_idx, delay_t)
+                # trajectories[delay_robot_idx].delaySegment(collision_idx, delay_t, at_start=True)
                 # collision_flag, collision_idx = \
                 #     self.trajectoriesCollide(trajectories[delay_robot_idx], trajectories[nondelay_robot_idx],
                 #                              safety_distance)
                 # if collision_flag and current_collision == collision_idx:
                 #     delay_t += delay_step
                 #     print(delay_t)
+                #     trajectories[delay_robot_idx] = trajecory_backup
                 # else:
                 #     delay_t = delay_step
+                #     trajecory_backup = trajectories[delay_robot_idx]
 
                 # delay the shorter-trajectory UAV at the start point by sampling period
-                delay_t += delay_step
                 # TIP: use function `trajectory.delayStart(X)` to delay a UAV at the start location by X seconds
                 trajectories[delay_robot_idx].delayStart(delay_step)
                 collision_flag, collision_idx = \
                     self.trajectoriesCollide(trajectories[delay_robot_idx], trajectories[nondelay_robot_idx],
                                              safety_distance)
+                delay_t += delay_step
 
 
         # # #}
