@@ -39,7 +39,7 @@ class MrimPlanner:
         self._smoothing_distance       = rospy.get_param('~path_smoothing/lookahead_dist', 0.3)
         self._sample_with_stops        = rospy.get_param('~trajectory_sampling/with_stops', True)
         self._global_frame             = rospy.get_param('~global_frame', "gps_origin")
-        self._tsp_clustering_method    = rospy.get_param('~tsp/clustering', 'random')
+        self._tsp_clustering_method    = rospy.get_param('~tsp/clustering', 'kmeans')
 
         max_vel_x                      = rospy.get_param('~dynamic_constraints/max_velocity/x', 1.0)
         max_vel_y                      = rospy.get_param('~dynamic_constraints/max_velocity/y', 1.0)
