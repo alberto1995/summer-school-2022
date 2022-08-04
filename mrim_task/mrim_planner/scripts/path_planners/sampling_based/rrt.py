@@ -149,11 +149,12 @@ class RRT:
 
             point = Point(x, y, z)
             point_valid = self.pointValid(point)
+            sigma_orig = sigma
             if not point_valid:
                 i += 1
                 if i % 10 == 0:
                     print(sigma)
-                    sigma = np.clip(sigma + sigma * 0.2, -5, 5)
+                    sigma = np.clip(sigma + sigma * 0.2, np.zeros_like(sigma), np.ones_like(sigma) * np.max(sigma_orig) * 2)
                     print(sigma)
             else:
                 i = 0
