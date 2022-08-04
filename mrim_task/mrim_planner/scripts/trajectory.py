@@ -195,12 +195,10 @@ class TrajectoryUtils():
                 subtraj_0 = subtraj[i - 1].point
                 subtraj_1 = subtraj[i].point
 
-                # [STUDENTS TODO, COMPULSORY] Implement heading interpolation here
                 # Tips:
                 #  - interpolate the heading linearly (create a function of distance between two points of the subpath)
                 #  - do not forget to wrap angle to <-pi, pi) (see/use wrapAngle() in utils.py)
 
-                # [STUDENTS TODO] Change variable 'hdg_interp', nothing else
                 hdg_interp = wrapAngle(hdg_from + (d_hdg / subtraj_len) * distEuclidean(subtraj_0, subtraj_1))
 
                 # replace heading
@@ -241,7 +239,6 @@ class TrajectoryUtils():
         dist_total = distEuclidean(start, stop)
         #print("dist_total", dist_total)
 
-        # [STUDENTS TODO] Rework the method to per-axis computation if you want to exploit the allowed dynamics in all axes
         # Set minimal velocity/acceleration to the axis limit with minimal constraint
         # print("max_vel: ", self.max_acceleration)
         # print("max_acc: ", self.max_acceleration)
@@ -451,13 +448,11 @@ class TrajectoryUtils():
             sampling_step = trajectory.dT
             ts_sample = np.arange(0, toppra_trajectory.duration, sampling_step)
 
-            # STUDENTS TODO: Sample the path parametrization 'toppra_trajectory' (instance of TOPPRA library).
-            # raise NotImplementedError('[STUDENTS TODO] Trajectory sampling not finished. You have to implement it on your own.')
             # Tips:
             #  - check documentation for TOPPRA (look for eval() function): https://hungpham2511.github.io/toppra/index.html
             #  - use 'toppra_trajectory' and the predefined sampling step 'sampling_step'
 
-            samples = toppra_trajectory.eval(ts_sample)  # [STUDENTS TODO] Fill this variable with trajectory samples
+            samples = toppra_trajectory.eval(ts_sample)
             # Convert to Trajectory class
             poses      = [Pose(q[0], q[1], q[2], q[3]) for q in samples]
             trajectory = self.posesToTrajectory(poses)
@@ -610,7 +605,6 @@ class TrajectoryUtils():
         ## |  [COLLISION AVOIDANCE METHOD #2]: Delay UAV with shorter trajectory at start until there is no collision occurring  |
         elif method == 'delay_till_no_collisions_occur':
 
-            # raise NotImplementedError('[STUDENTS TODO] Collision prevention method \'delay_till_no_collisions_occur\' not finished. You have to finish it on your own.')
             # Tips:
             #  - you might select which trajectory it is better to delay
             #  - the smallest delay step is the sampling step stored in variable 'self.dT'
@@ -619,13 +613,7 @@ class TrajectoryUtils():
             traj_times = [t.getTime() for t in trajectories]
             traj_lens  = [t.getLength() for t in trajectories]
 
-            print(trajectories[0])
-            # print("Traj: ", trajectories[0].print())
-            print("Times: ", traj_times)
-            print("Length: ", traj_lens)
-
             # Decide which UAV should be delayed
-            # [STUDENTS TODO] CHANGE BELOW
             delay_robot_idx, nondelay_robot_idx = 0, 1
 
             if traj_times[delay_robot_idx] > traj_times[nondelay_robot_idx]:

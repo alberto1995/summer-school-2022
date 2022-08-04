@@ -267,20 +267,35 @@ class TSPSolver3D():
         if method == 'kmeans':
             # Prepare positions of the viewpoints in the world
             positions = np.array([vp.pose.point.asList() for vp in viewpoints])
+            classes = np.array([vp.idx for vp in viewpoints])
 
             #print('VP positions:')
             #print(positions)
-            #raise NotImplementedError('[STUDENTS TODO] KMeans clustering of viewpoints not implemented. You have to finish it on your own')
             # Tips:
             #  - utilize sklearn.cluster.KMeans implementation (https://scikit-learn.org/stable/modules/generated/sklearn.cluster.KMeans.html)
             #  - after finding the labels, you may want to swap the classes (e.g., by looking at the distance of the UAVs from the cluster centers)
-
+            # print("##############")
+            # print(positions, classes)
+            # print("##############")
             kmeans = KMeans(n_clusters=k, tol=1e-2, random_state=15).fit(positions)
-            print('Kmeans cluster assignment')
-            print(kmeans.labels_)
+
+            # print("##############")
+            # print(kmeans.cluster_centers_)
+            centers = kmeans.cluster_centers_
+            start_poses = []
+            for r in range(k):
+                start_poses.append(np.array([problem.start_poses[r].position.x, problem.start_poses[r].position.y, problem.start_poses[r].position.z]))
+
+            if np.linalg.norm([start_poses[0], centers[0]]) < np.linalg.norm([start_poses[0], centers[0]]):
+                labels = kmeans.labels_
+            else:
+                labels = 1 - kmeans.labels_
+            # print("##############")
+            # print('Kmeans cluster assignment')
+            # print(kmeans.labels_)
 
             # TODO: fill 1D list 'labels' of size len(viewpoints) with indices of the robots
-            labels = kmeans.labels_
+            # labels = kmeans.labels_
 
         ## | -------------------- Random clustering ------------------- |
         else:
