@@ -286,7 +286,7 @@ class TSPSolver3D():
             for r in range(k):
                 start_poses.append(np.array([problem.start_poses[r].position.x, problem.start_poses[r].position.y, problem.start_poses[r].position.z]))
 
-            if np.linalg.norm([start_poses[0], centers[0]]) < np.linalg.norm([start_poses[0], centers[0]]):
+            if np.linalg.norm([start_poses[0], centers[0]]) < np.linalg.norm([start_poses[0], centers[1]]):
                 labels = kmeans.labels_
             else:
                 labels = 1 - kmeans.labels_

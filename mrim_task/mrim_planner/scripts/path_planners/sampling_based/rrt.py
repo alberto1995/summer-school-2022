@@ -138,6 +138,7 @@ class RRT:
         point       = None
         point_valid = False
         i = 0
+        sigma_orig = sigma
         while not point_valid:
             # Tips:
             #  - sample from Normal distribution: use numpy.random.normal (https://numpy.org/doc/stable/reference/random/generated/numpy.random.normal.html)
@@ -149,15 +150,8 @@ class RRT:
 
             point = Point(x, y, z)
             point_valid = self.pointValid(point)
-            sigma_orig = sigma
             if not point_valid:
-                i += 1
-                if i % 10 == 0:
-                    print(sigma)
-                    sigma = np.clip(sigma + sigma * 0.2, np.zeros_like(sigma), np.ones_like(sigma) * np.max(sigma_orig) * 2)
-                    print(sigma)
-            else:
-                i = 0
+                sigma = np.clip(sigma + sigma * 0.2, np.zeros_like(sigma), np.ones_like(sigma) * np.max(sigma_orig) * 5)
 
         return point.asTuple()
     # # #}
@@ -303,15 +297,17 @@ class RRT:
         if len(path) <= 2:
             return path
 
-        raise NotImplementedError('[STUDENTS TODO] RRT: path straightening is not finished. Finish it on your own.')
+        # raise NotImplementedError('[STUDENTS TODO] RRT: path straightening is not finished. Finish it on your own.')
         # Tips:
         #  - divide the given path by a certain ratio and use this method recursively
 
         if not self.validateLinePath(pt1, pt2, check_bounds=False):
             
             # [STUDENTS TODO] Replace seg1 and seg2 variables effectively
-            seg1 = path[:1]
-            seg2 = path[1:]
+            center = int(len(path)/2)
+
+            seg1 = self.halveAndTest(path[:center])
+            seg2 = self.halveAndTest(path[center:])
 
             seg1.extend(seg2)
             return seg1
